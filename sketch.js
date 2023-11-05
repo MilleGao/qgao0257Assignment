@@ -2,6 +2,9 @@ let colors = [];
 var nums1 = [10, 100, 210, 320, 470, 500, 630, 700, 790];
 var nums2 = [30, 100, 210, 300, 400, 550, 630, 750, 790];
 let scaleX, scaleY;
+let speed = 0.5; // initial speed
+let maxSpeed = 4; 
+let rectangles = []; 
 
 
 function setup() {
@@ -22,6 +25,17 @@ function setup() {
   scaleY = windowHeight / 800;
 
   setTimeout(clearCanvas, 8000);
+  // initialise yellow blocks
+  for (let i = 0; i < 10; i++) {
+    let rectInfo = {
+      x : (nums1[i] + 200) * scaleX,
+      y : (nums2[i] + 200) * scaleY + frameCount * speed,
+      w : 40 * scaleX, 
+      h : 80 * scaleY,
+      speedY: speed*5,
+    };
+    rectangles.push(rectInfo);
+  }
 }
 
 function windowResized() {
@@ -62,7 +76,8 @@ function draw() {
     }
     fill(255, 229, 6);
   }
-
+  
+//Horizontal rectangles
   for (let j = 1; j < 8; j++) {
     if (j == 1 || j == 5 || j == 6) {
         let x = 0;
@@ -93,48 +108,87 @@ function draw() {
 
   
   // Fixed position rectangles
-  for (let i = 0; i < 8; i++) {
-    noStroke();
-    fill(colors[1]); //blue
-    rect(nums1[i] * scaleX, nums2[i] * 3 * scaleY, 100 * scaleX, 70 * scaleY);
+    // Update the speed of movement
+    if (speed < maxSpeed) {
+      speed += 0.2; // You can adjust the acceleration as needed
+    }
+  
+    // Fixed position rectangles
+    for (let i = 0; i < 8; i++) {
+      noStroke();
+      fill(colors[1]); // Blue
+      let x = nums1[i] * scaleX;
+      let y = nums2[i] * scaleY*3 + frameCount/speed; // Adjust the Y position based on time
+      rect(x, y, 100 * scaleX, 70 * scaleY);
+    }
+  
+  
+    for (let i = 0; i < 8; i++) {
+      noStroke();
+      fill(colors[2]); //red
+      let x = nums1[i] * scaleX;
+      let y = nums2[i] * 2 * scaleY + frameCount/speed;
+      rect(x,y, (100 + 50) * scaleX, 80 * scaleY);
+    }
+  
+    for (let i = 0; i < 8; i++) {
+      noStroke();
+      fill(colors[2]); //red
+      let x = nums1[i] * 2 * scaleX + frameCount/speed;
+      let y = nums2[i] * scaleY;
+      rect(x,y, 60 * scaleX, 50 * scaleY);
+    }
+  
+    for (let i = 0; i < 6; i++) {
+      noStroke();
+      fill(colors[2]); //red
+      let x = nums1[i] * 2 * scaleX + frameCount/speed;
+      let y = nums2[i] * scaleY;
+      rect(x,y , 60 * scaleX, 50 * scaleY);
+    }
+  
+    for (let i = 0; i < 10; i++) {
+      noStroke();
+      fill(colors[0]); //gray
+      let x = (nums1[i] * 2 + 20) * scaleX +frameCount/speed;
+      let y = (nums2[i] + 10) * scaleY
+      rect(x, y, 30 * scaleX, 30 * scaleY);
+    }
+  
+  
+  
+    // Update the position of rectangles based on time and speed
+    for (let i = 0; i < 10; i++) {
+      noStroke();
+      fill(255, 229, 6); // Yellow
+      let rectInfo = rectangles[i];
+      let x = rectInfo.x;
+      let y = rectInfo.y;
+      let w = rectInfo.w;
+      let h = rectInfo.h;
+      
+      let speedY = rectInfo.speedY;// Adjust the Y position based on time and speed
+      rect(x, y, w,h);
+      // bounce when reaches boundary
+      if (y +h < 0 || y - h > height) {
+        speedY *= -1; // reverse the movement direction
+      }
+  
+      y += speedY;
+      rectangles[i].y = y;
+      rectangles[i].speedY = speedY;
+    }
+  
+  
+    for (let i = 0; i < 10; i++) {
+      noStroke();
+      fill(colors[1]); //blue
+      let x = nums1[i * 2] + 220 * scaleX;
+      let y = (nums2[i] + 400) * scaleY + frameCount / speed;
+      rect(x, y, 100 * scaleX, 80 * scaleY);
+    }
+    frameCount++;
   }
-
-  for (let i = 0; i < 8; i++) {
-    noStroke();
-    fill(colors[2]); //red
-    rect(nums1[i] * scaleX, nums2[i] * 2 * scaleY, (100 + 50) * scaleX, 80 * scaleY);
-  }
-
-  for (let i = 0; i < 8; i++) {
-    noStroke();
-    fill(colors[2]); //red
-    rect(nums1[i] * 2 * scaleX, nums2[i] * scaleY, 60 * scaleX, 50 * scaleY);
-  }
-
-  for (let i = 0; i < 6; i++) {
-    noStroke();
-    fill(colors[2]); //red
-    rect(nums1[i] * 2 * scaleX, nums2[i] * scaleY, 60 * scaleX, 50 * scaleY);
-  }
-
-  for (let i = 0; i < 10; i++) {
-    noStroke();
-    fill(colors[0]); //gray
-    rect((nums1[i] * 2 + 20) * scaleX, (nums2[i] + 10) * scaleY, 30 * scaleX, 30 * scaleY);
-  }
-
-  for (let i = 0; i < 10; i++) {
-    noStroke();
-    fill(255, 229, 6); //yellow
-    rect((nums1[i] + 200) * scaleX, (nums2[i] + 200) * scaleY, 40 * scaleX, 80 * scaleY);
-  }
-
-  for (let i = 0; i < 10; i++) {
-    noStroke();
-    fill(colors[1]); //blue
-    rect((nums1[i * 2] + 220) * scaleX, (nums2[i] + 400) * scaleY, 100 * scaleX, 80 * scaleY);
-  }
-}
 function clearCanvas() {
   frameCount=0;
   clear(); 
