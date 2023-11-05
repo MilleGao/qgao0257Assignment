@@ -5,13 +5,14 @@ let scaleX, scaleY;
 let speed = 1; // initial speed
 let maxSpeed = 4; 
 let rectangles = []; 
+let backgroundColor;
 
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   // noLoop();
   noStroke();
-
+  backgroundColor = color(242, 240, 235);
   let grayColor = color(150);  // Gray
   let blueColor = color(21, 29, 176);  // Blue
   let redColor = color(161, 7, 2);  // Red
@@ -32,7 +33,7 @@ function setup() {
       y : (nums2[i] + 200) * scaleY + frameCount * speed,
       w : 40 * scaleX, 
       h : 80 * scaleY,
-      speedY: speed*5,
+      speedY: speed * 5,
     };
     rectangles.push(rectInfo);
   }
@@ -45,7 +46,15 @@ function windowResized() {
 }
 
 function draw() {
-  background(250);
+  // background(250);
+  if (frameCount <= 360) { // 6s
+    let darkeningAmount = frameCount / 360; 
+    backgroundColor = color(255 * (1 - darkeningAmount)); // darken rgb
+
+    background(backgroundColor);
+  } else {
+    background(0); 
+  }
 
   // Vertical rectangles
   for (let i = 1; i < 10; i++) {
@@ -104,8 +113,6 @@ function draw() {
     }
     fill(255, 229, 6);
   }
-  
-
 
   
   // Fixed position rectangles
@@ -186,6 +193,7 @@ function draw() {
   }
 function clearCanvas() {
   frameCount=0;
+  background(backgroundColor); 
   clear(); 
   setTimeout(clearCanvas, 6000);
 }
