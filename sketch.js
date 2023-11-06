@@ -8,7 +8,7 @@ let rectangles = [];
 let newRectangles = []; // store flip rects
 let backgroundColor;
 let flipDuration = 6000; 
-let flipInterval = 3000; // 翻转间隔时间
+let flipInterval = 3000; 
 
 
 function setup() {
@@ -166,13 +166,12 @@ function draw() {
 
 
 
-  // Update the position of rectangles based on time and speed
-   // 渲染可见的矩形
+  // Update the position of yellow rectangles based on time and speed
    for (let i = 0; i < newRectangles.length; i++) {
     let rectInfo = newRectangles[i];
     noStroke();
     if (rectInfo.isFlipping) {
-      // 翻转中，交替颜色
+      // flip and change to white
       if (frameCount % 120 < 60) {
         fill(255);
       } else {
@@ -191,13 +190,13 @@ function draw() {
         rectInfo.isFlipping = false;
       }
     } else {
-      // 非翻转状态，保持当前颜色
+      // keep in yellow
       fill(255, 229, 6);
       rect(rectInfo.x, rectInfo.y, rectInfo.w, rectInfo.h);
     }
   }
 
-  // 更新矩形的位置，并筛选出可见的矩形
+  // update rects position
   newRectangles = [];
   for (let i = 0; i < rectangles.length; i++) {
     let rectInfo = rectangles[i];
@@ -206,7 +205,7 @@ function draw() {
     let speedY = rectInfo.speedY;
 
     if (y + rectInfo.h >= 0 && y - rectInfo.h <= height) {
-      // 如果矩形在屏幕内，则将其添加到可见的矩形数组中
+      // check if in the canva, push into array
       newRectangles.push(rectInfo);
     }
 
