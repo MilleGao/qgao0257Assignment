@@ -5,7 +5,10 @@ let scaleX, scaleY;
 let speed = 1; // initial speed
 let maxSpeed = 4; 
 let rectangles = []; 
+let newRectangles = []; // store flip rects
 let backgroundColor;
+let flipDuration = 6000; 
+let flipInterval = 3000; // 翻转间隔时间
 
 
 function setup() {
@@ -25,18 +28,22 @@ function setup() {
   scaleX = windowWidth / 800; 
   scaleY = windowHeight / 800;
 
-  setTimeout(clearCanvas, 6000);
+  
   // initialise yellow blocks
   for (let i = 0; i < 10; i++) {
     let rectInfo = {
-      x : (nums1[i] + 200) * scaleX,
-      y : (nums2[i] + 200) * scaleY + frameCount * speed,
-      w : 40 * scaleX, 
-      h : 80 * scaleY,
+      x: (nums1[i] + 200) * scaleX,
+      y: (nums2[i] + 200) * scaleY + frameCount * speed,
+      w: 40 * scaleX,
+      h: 80 * scaleY,
       speedY: speed * 5,
+      isFlipping: false, // check if is flipping
+      flipStartTime: 0 // start from 0
     };
     rectangles.push(rectInfo);
   }
+  setInterval(startFlip, flipInterval); 
+  setTimeout(clearCanvas, 6000);
 }
 
 function windowResized() {
@@ -160,20 +167,53 @@ function draw() {
 
 
   // Update the position of rectangles based on time and speed
-  for (let i = 0; i < 10; i++) {
+   // 渲染可见的矩形
+   for (let i = 0; i < newRectangles.length; i++) {
+    let rectInfo = newRectangles[i];
     noStroke();
-    fill(255, 229, 6); // Yellow
+    if (rectInfo.isFlipping) {
+      // 翻转中，交替颜色
+      if (frameCount % 120 < 60) {
+        fill(255);
+      } else {
+        fill(255, 229, 6);
+      }
+
+      let currentTime = millis() - rectInfo.flipStartTime;
+      let progress = constrain(currentTime / flipDuration, 0, 1);
+      let angle = map(progress, 0, 1, 0, PI);
+      push();
+      translate(rectInfo.x + rectInfo.w / 2, rectInfo.y + rectInfo.h / 2);
+      rotate(angle);
+      rect(-rectInfo.w / 2, -rectInfo.h / 2, rectInfo.w, rectInfo.h);
+      pop();
+      if (progress >= 1) {
+        rectInfo.isFlipping = false;
+      }
+    } else {
+      // 非翻转状态，保持当前颜色
+      fill(255, 229, 6);
+      rect(rectInfo.x, rectInfo.y, rectInfo.w, rectInfo.h);
+    }
+  }
+
+  // 更新矩形的位置，并筛选出可见的矩形
+  newRectangles = [];
+  for (let i = 0; i < rectangles.length; i++) {
     let rectInfo = rectangles[i];
     let x = rectInfo.x;
     let y = rectInfo.y;
-    let w = rectInfo.w;
-    let h = rectInfo.h;
-    
-    let speedY = rectInfo.speedY;// Adjust the Y position based on time and speed
-    rect(x, y, w,h);
-    // bounce when reaches boundary
-    if (y +h < 0 || y - h > height) {
-      speedY *= -1; // reverse the movement direction
+    let speedY = rectInfo.speedY;
+
+    if (y + rectInfo.h >= 0 && y - rectInfo.h <= height) {
+      // 如果矩形在屏幕内，则将其添加到可见的矩形数组中
+      newRectangles.push(rectInfo);
+    }
+
+    if (y + rectInfo.h < 0 || y - rectInfo.h > height) {
+      speedY *= -1;
+      rectInfo.isFlipping = true;
+      rectInfo.flipStartTime = millis();
     }
 
     y += speedY;
@@ -191,6 +231,16 @@ function draw() {
   }
   frameCount++;
   }
+
+function startFlip() {
+  for (let i = 0; i < newRectangles.length; i++) {
+    let rectInfo = newRectangles[i];
+    if (!rectInfo.isFlipping) {
+      rectInfo.isFlipping = true;
+      rectInfo.flipStartTime = millis();
+    }
+  }
+}
 function clearCanvas() {
   frameCount=0;
   background(backgroundColor); 
