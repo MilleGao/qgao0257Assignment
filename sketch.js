@@ -179,10 +179,10 @@ function draw() {
       }
 
       let currentTime = millis() - rectInfo.flipStartTime;
-      let progress = constrain(currentTime / flipDuration, 0, 1);
+      let progress = constrain(currentTime / flipDuration, 0, 1);//min 0, max 1
       let angle = map(progress, 0, 1, 0, PI);
       push();
-      translate(rectInfo.x + rectInfo.w / 2, rectInfo.y + rectInfo.h / 2);
+      translate(rectInfo.x + rectInfo.w / 2, rectInfo.y + rectInfo.h / 2);//(0,0) change to rects center
       rotate(angle);
       rect(-rectInfo.w / 2, -rectInfo.h / 2, rectInfo.w, rectInfo.h);
       pop();
